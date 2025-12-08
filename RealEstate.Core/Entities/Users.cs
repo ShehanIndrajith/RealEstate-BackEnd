@@ -20,5 +20,6 @@ namespace RealEstate.Core.Entities
         public bool? IsVerified { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public ICollection<Properties> Properties { get; set; } = new List<Properties>();
     }
 }

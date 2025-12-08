@@ -9,8 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<RealEstateDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+#region Services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPropertyService, PropertyService>();
+#endregion
+
+#region Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
+#endregion
 
 // Add services to the container.
 
