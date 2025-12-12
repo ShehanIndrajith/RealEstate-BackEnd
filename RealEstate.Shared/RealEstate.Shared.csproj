@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Folder Include="DTOs\Property\" />
+    <Folder Include="DTOs\User\" />
   </ItemGroup>
 
 </Project>
