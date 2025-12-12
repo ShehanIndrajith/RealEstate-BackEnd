@@ -1,12 +1,3 @@
-# Base runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-# HTTP port
-EXPOSE 8080
-
-# HTTPS port
-EXPOSE 8081
-
 # Build image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -21,12 +12,11 @@ COPY ["RealEstate.Infrastructure/RealEstate.Infrastructure.csproj", "RealEstate.
 # Restore dependencies
 RUN dotnet restore "./RealEstate.API/RealEstate.API.csproj"
 
-# Copy certificate into container
+# Copy certificate from local certs folder to build stage
 COPY ./certs/aspnetapp.pfx /root/certs/aspnetapp.pfx
 
 # Copy all source files
 COPY . .
-
 WORKDIR "/src/RealEstate.API"
 
 # Build the project
@@ -41,10 +31,20 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+# Create certs directory in final image
+RUN mkdir -p /root/certs
+
+# Copy certificate from build stage to final image
+COPY --from=build /root/certs/aspnetapp.pfx /root/certs/aspnetapp.pfx
+
 # Set environment variables for Kestrel HTTPS
 ENV ASPNETCORE_URLS=http://+:8080;https://+:8081
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/root/certs/aspnetapp.pfx
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=shehan2002
 ENV ASPNETCORE_ENVIRONMENT=Development
+
+# Verify certificate exists
+RUN echo "Certificate path: /root/certs/aspnetapp.pfx" && \
+    ls -la /root/certs/aspnetapp.pfx
 
 ENTRYPOINT ["dotnet", "RealEstate.API.dll"]
