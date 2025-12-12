@@ -17,6 +17,7 @@
   <ItemGroup>
     <Folder Include="Enums\" />
     <Folder Include="Interfaces\" />
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
   <ItemGroup>
