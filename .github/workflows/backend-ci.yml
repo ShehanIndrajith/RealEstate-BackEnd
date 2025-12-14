@@ -33,6 +33,16 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
 
+       # Update your workflow to verify the certificate exists
+      - name: Check certificate exists
+        run: |
+          ls -la certs/
+          if [ -f "certs/aspnetapp.pfx" ]; then
+            echo "Certificate found"
+          else
+            echo "Certificate NOT found"
+          fi
+
       # 6️⃣ Build Docker image
       - name: Build Docker image
         run: |
