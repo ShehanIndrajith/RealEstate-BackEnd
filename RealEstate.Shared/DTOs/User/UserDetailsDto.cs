@@ -14,6 +14,7 @@ namespace RealEstate.Shared.DTOs.User
         public string PhoneNumber { get; set; }
         public string WhatsAppNumber { get; set; }
         public string Role { get; set; }
+        public bool IsVerified { get; set; }
         public string? ProfilePictureURL { get; set; }
 
         public AgentDto? Agent { get; set; }

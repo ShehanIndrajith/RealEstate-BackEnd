@@ -44,10 +44,19 @@ namespace RealEstate.API.Controllers.UserAuthentication
             return Ok(user);
         }
 
-        [HttpGet("{id}/details")]
-        public async Task<IActionResult> GetUserDetails(int id)
+        [Authorize]
+        [HttpGet("me/details")]
+        public async Task<IActionResult> GetMyDetails()
         {
-            var user = await _userService.GetUserWithDetailsAsync(id);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+                return Unauthorized();
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var user = await _userService.GetUserWithDetailsAsync(userId);
+
             if (user == null)
                 return NotFound(new { message = "User not found" });
 
@@ -58,6 +67,7 @@ namespace RealEstate.API.Controllers.UserAuthentication
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Role = user.Role,
+                IsVerified = user.IsVerified,
                 ProfilePictureURL = user.ProfilePictureURL,
                 Agent = user.Agent != null ? new AgentDto
                 {
@@ -80,6 +90,7 @@ namespace RealEstate.API.Controllers.UserAuthentication
 
             return Ok(userDto);
         }
+
 
 
     }
