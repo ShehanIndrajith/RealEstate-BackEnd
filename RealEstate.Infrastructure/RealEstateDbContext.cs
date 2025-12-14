@@ -60,6 +60,7 @@ namespace RealEstate.Infrastructure
                 entity.Property(e => e.FullName).HasMaxLength(150).IsRequired();
                 entity.Property(e => e.Email).HasMaxLength(150).IsRequired();
                 entity.Property(e => e.PhoneNumber).HasMaxLength(30);
+                entity.Property(e => e.WhatsAppNumber).HasMaxLength(30);
                 entity.Property(e => e.ProfilePictureURL).HasMaxLength(255);
 
                 entity.Property(e => e.IsVerified).HasDefaultValue(false);

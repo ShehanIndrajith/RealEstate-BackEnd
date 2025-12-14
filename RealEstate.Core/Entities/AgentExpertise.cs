@@ -18,6 +18,6 @@ namespace RealEstate.Core.Entities
         public DateTime CreatedAt { get; set; }
 
         // Navigation
-        public Agent Agent { get; set; }
+        public Agent? Agent { get; set; }
     }
 }

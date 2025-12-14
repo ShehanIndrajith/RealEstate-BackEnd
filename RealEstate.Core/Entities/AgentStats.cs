@@ -15,12 +15,12 @@ namespace RealEstate.Core.Entities
         public int StatsID { get; set; }
         public int AgentID { get; set; }
 
-        public int TotalPropertyListed { get; set; }
+        public int TotalPropertiesListed { get; set; }
         public int TotalSales { get; set; }
         public decimal AvgRating { get; set; }
         public int YearsExperience { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public Agent Agent { get; set; }
+        public Agent? Agent { get; set; }
     }
 }

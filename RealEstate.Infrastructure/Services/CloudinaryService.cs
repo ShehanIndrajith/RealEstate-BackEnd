@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using RealEstate.Core.Entities;
-//using RealEstate.Core.Interfaces;
+using RealEstate.Core.Interfaces;
 using RealEstate.Core.Services;
 using Microsoft.AspNetCore.Http;
-//using RealEstate.Shared.DTOs.User;
+using RealEstate.Shared.DTOs.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;

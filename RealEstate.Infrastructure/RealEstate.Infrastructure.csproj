@@ -30,8 +30,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Repositories\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

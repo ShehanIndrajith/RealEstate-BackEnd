@@ -15,20 +15,21 @@ namespace RealEstate.Core.Entities
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public string Role { get; set; }
-        public string PhoneNumber { get; set; }
-        public string ProfilePictureURL { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? ProfilePictureURL { get; set; }
         public bool IsVerified { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsActive { get; set; }
+        public string? WhatsAppNumber { get; set; }
 
         // Navigation
-        public Agent Agent { get; set; }
-        public Builder Builder { get; set; }
-        public ICollection<UserCertification> UserCertifications { get; set; }
-        public ICollection<Payment> Payments { get; set; }
-        public ICollection<AgentReview> AgentReviews { get; set; }
-        public ICollection<BuilderReview> BuilderReviews { get; set; }
+        public Agent? Agent { get; set; }
+        public Builder? Builder { get; set; }
+        public ICollection<UserCertification>? UserCertifications { get; set; }
+        public ICollection<Payment>? Payments { get; set; }
+        public ICollection<AgentReview>? AgentReviews { get; set; }
+        public ICollection<BuilderReview>? BuilderReviews { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace RealEstate.Core.Entities
         public DateTime ReviewDate { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public Agent Agent { get; set; }
+        public Agent? Agent { get; set; }
         public User Reviewer { get; set; }
     }
 }
