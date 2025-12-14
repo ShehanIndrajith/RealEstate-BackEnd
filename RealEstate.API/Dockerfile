@@ -9,11 +9,15 @@ COPY ["RealEstate.Core/RealEstate.Core.csproj", "RealEstate.Core/"]
 COPY ["RealEstate.Shared/RealEstate.Shared.csproj", "RealEstate.Shared/"]
 COPY ["RealEstate.Infrastructure/RealEstate.Infrastructure.csproj", "RealEstate.Infrastructure/"]
 
+# Copy certificate
+COPY ./certs/aspnetapp.pfx /root/certs/aspnetapp.pfx
+
+
 # Restore dependencies
 RUN dotnet restore "./RealEstate.API/RealEstate.API.csproj"
 
 # Copy certificate
-COPY ./certs/aspnetapp.pfx /root/certs/aspnetapp.pfx
+#COPY ./certs/aspnetapp.pfx /root/certs/aspnetapp.pfx
 
 # Copy all source files
 COPY . .

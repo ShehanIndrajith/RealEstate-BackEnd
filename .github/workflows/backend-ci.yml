@@ -39,7 +39,7 @@ jobs:
           docker build \
             -t shehan/realestate-api:${{ github.ref_name }} \
             -f ./RealEstate.API/Dockerfile \
-            ./RealEstate.API
+            .
 
 
       # 7️⃣ Login to Docker Hub (MAIN branch only)
