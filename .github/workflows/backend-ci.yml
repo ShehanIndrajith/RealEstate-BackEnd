@@ -36,7 +36,7 @@ jobs:
       # 6️⃣ Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t Shehan Indrajith/realestate-api:${{ github.ref_name }} .
+          docker build -t shehanindrajith2002/realestate-api:${{ github.ref_name }} .
 
       # 7️⃣ Login to Docker Hub (MAIN branch only)
       - name: Login to Docker Hub
@@ -50,4 +50,4 @@ jobs:
       - name: Push Docker image
         if: github.ref_name == 'main'
         run: |
-          docker push Shehan Indrajith/realestate-api:main
+          docker push shehanindrajith2002/realestate-api:main
