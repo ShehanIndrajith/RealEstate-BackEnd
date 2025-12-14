@@ -47,7 +47,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t shehan/realestate-api:${{ github.ref_name }} \
+            -t shehanindrajith2002/realestate-api:${{ github.ref_name }} \
             -f ./RealEstate.API/Dockerfile \
             .
 
