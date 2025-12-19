@@ -14,18 +14,18 @@ namespace RealEstate.Core.Entities
         [Key]
         public int BuilderID { get; set; }
         public int UserID { get; set; }
-        public string CompanyName { get; set; }
-        public string Description { get; set; }
-        public string Location { get; set; }
+        public string? CompanyName { get; set; }
+        public string? Description { get; set; }
+        public string? Location { get; set; }
         public int? EstablishedYear { get; set; }
-        public string LogoURL { get; set; }
-        public string Address { get; set; }
+        public string? LogoURL { get; set; }
+        public string? Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public string Slug { get; set; }
-        public string ContactEmail { get; set; }
-        public string ContactPhone { get; set; }
-        public string WebsiteURL { get; set; }
+        public string? Slug { get; set; }
+        public string? ContactEmail { get; set; }
+        public string? ContactPhone { get; set; }
+        public string? WebsiteURL { get; set; }
         public bool IsVerified { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }

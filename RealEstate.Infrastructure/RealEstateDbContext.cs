@@ -71,6 +71,8 @@ namespace RealEstate.Infrastructure
                 entity.HasCheckConstraint("CHK_Users_Role", "Role IN ('Admin','Agent','Builder')");
             });
 
+            
+
             // ==========================
             // 2. Agent (1:1 with User)
             // ==========================

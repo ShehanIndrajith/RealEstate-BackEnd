@@ -19,9 +19,12 @@ builder.Services.AddDbContext<RealEstateDbContext>(options =>
 
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddScoped<JwtTokenGenerator>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAgentRepository, AgentRepository>();
+builder.Services.AddScoped<IBuilderRepository, BuilderRepository>();
 
 // Controllers & Swagger
 builder.Services.AddControllers();

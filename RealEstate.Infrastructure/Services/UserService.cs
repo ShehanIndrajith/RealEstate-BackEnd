@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using RealEstate.Core.Entities;
 using RealEstate.Core.Interfaces;
 using RealEstate.Core.Services;
+using RealEstate.Infrastructure.Repositories;
 using RealEstate.Shared.DTOs.User;
 using System;
 using System.Collections.Generic;
@@ -16,18 +17,22 @@ namespace RealEstate.Infrastructure.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IAgentRepository _agentRepository;
+        private readonly IBuilderRepository _builderRepository;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
         private readonly Cloudinary _cloudinary;
         private readonly PasswordHasher<User> _passwordHasher;
 
         public UserService(
-            IUserRepository userRepository,
-            Cloudinary cloudinary, JwtTokenGenerator jwtTokenGenerator)
+            IUserRepository userRepository,IAgentRepository agentRepository,
+            Cloudinary cloudinary, JwtTokenGenerator jwtTokenGenerator, IBuilderRepository builderRepository)
         {
             _userRepository = userRepository;
+            _agentRepository = agentRepository;
             _cloudinary = cloudinary;
             _passwordHasher = new PasswordHasher<User>();
             _jwtTokenGenerator = jwtTokenGenerator;
+            _builderRepository = builderRepository;
         }
 
         public async Task RegisterUserAsync(CreateUserRequest request)
@@ -37,9 +42,9 @@ namespace RealEstate.Infrastructure.Services
             if (existingUser != null)
                 throw new Exception("Email already exists");
 
-            string imageUrl = null;
+            string? imageUrl = null;
 
-            // Upload image to Cloudinary
+            // Upload image
             if (request.ProfileImage != null)
             {
                 using var stream = request.ProfileImage.OpenReadStream();
@@ -70,8 +75,39 @@ namespace RealEstate.Infrastructure.Services
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
             await _userRepository.AddAsync(user);
+
+            // 🔥 Role-based creation
+            if (request.Role == "Agent")
+            {
+                var agent = new Agent
+                {
+                    User = user, // EF will set UserID automatically
+                    IsVerified = false,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                await _agentRepository.AddAsync(agent);
+            }
+            else if (request.Role == "Builder")
+            {
+                var builder = new Builder
+                {
+                    User = user,
+                    IsVerified = false,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                await _builderRepository.AddAsync(builder);
+            }
+
+            // ✅ One transaction, one SaveChanges
             await _userRepository.SaveChangesAsync();
         }
+
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {

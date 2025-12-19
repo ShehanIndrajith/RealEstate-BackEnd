@@ -66,14 +66,17 @@ namespace RealEstate.API.Controllers.UserAuthentication
                 FullName = user.FullName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
+                WhatsAppNumber = user.WhatsAppNumber,
                 Role = user.Role,
                 IsVerified = user.IsVerified,
                 ProfilePictureURL = user.ProfilePictureURL,
                 Agent = user.Agent != null ? new AgentDto
                 {
+                    AgentID = user.Agent.AgentID,
                     Bio = user.Agent.Bio,
                     Location = user.Agent.Location,
                     ExperienceYears = user.Agent.ExperienceYears,
+                    IsVerified =  user.IsVerified,
                     Stats = user.Agent.AgentStats != null ? new AgentStatsDto
                     {
                         TotalPropertyListed = user.Agent.AgentStats.TotalPropertiesListed,
