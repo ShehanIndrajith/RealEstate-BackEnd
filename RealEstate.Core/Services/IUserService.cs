@@ -14,5 +14,6 @@ namespace RealEstate.Core.Services
         Task<LoginResponse> LoginAsync(LoginRequest request);
         Task<CurrentUserResponse> GetCurrentUserAsync(int userId);
         Task<User> GetUserWithDetailsAsync(int userId);
+        Task UpdateUserProfileAsync(int userId, UpdateUserProfileRequest request);
     }
 }

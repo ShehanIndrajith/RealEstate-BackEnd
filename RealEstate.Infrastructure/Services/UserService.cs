@@ -162,5 +162,49 @@ namespace RealEstate.Infrastructure.Services
         {
             return await _userRepository.GetUserWithDetailsAsync(userId);
         }
+
+        public async Task UpdateUserProfileAsync(int userId, UpdateUserProfileRequest request)
+        {
+            var user = await _userRepository.GetUserWithAgentAsync(userId);
+            if (user == null)
+                throw new Exception("User not found");
+
+            // Update allowed User fields
+           
+                user.FullName = request.FullName;
+
+                user.PhoneNumber = request.PhoneNumber;
+                user.WhatsAppNumber = request.WhatsAppNumber;
+                user.ProfilePictureURL = request.ProfilePictureURL;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            // Update Agent if exists
+            if (user.Agent != null)
+            {
+                
+                    user.Agent.Bio = request.Bio;
+
+                
+                    user.Agent.Location = request.Location;
+
+                
+                    user.Agent.ExperienceYears = request.ExperienceYears;
+
+                
+                    user.Agent.NationalRanking = request.NationalRanking;
+                user.Agent.UpdatedAt = DateTime.UtcNow;
+
+                // Handle Expertises
+                if (request.Expertises != null && request.Expertises.Any())
+                {
+                    await _agentRepository.AddAgentExpertisesIfNotExistsAsync(
+                        user.Agent.AgentID,
+                        request.Expertises
+                    );
+                }
+            }
+
+            await _userRepository.UpdateAsync(user);
+        }
     }
 }

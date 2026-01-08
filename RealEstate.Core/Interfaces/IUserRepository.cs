@@ -14,5 +14,7 @@ namespace RealEstate.Core.Interfaces
         Task SaveChangesAsync();
         Task<User> GetByIdAsync(int userId);
         Task<User> GetUserWithDetailsAsync(int userId);
+        Task<User?> GetUserWithAgentAsync(int userId);
+        Task UpdateAsync(User user);
     }
 }

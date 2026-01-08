@@ -52,5 +52,19 @@ namespace RealEstate.Infrastructure.Repositories
              .ThenInclude(a => a.Properties)          // Safe: only if Agent exists
          .FirstOrDefaultAsync(u => u.UserID == userId);
         }
+
+        public async Task<User?> GetUserWithAgentAsync(int userId)
+        {
+            return await _context.Users
+                .Include(u => u.Agent)
+                    .ThenInclude(a => a.AgentExpertise)
+                .FirstOrDefaultAsync(u => u.UserID == userId);
+        }
+
+        public async Task UpdateAsync(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

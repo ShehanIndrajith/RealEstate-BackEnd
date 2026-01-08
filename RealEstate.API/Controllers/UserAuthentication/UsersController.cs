@@ -94,6 +94,14 @@ namespace RealEstate.API.Controllers.UserAuthentication
             return Ok(userDto);
         }
 
+        [HttpPatch("{userId}")]
+        public async Task<IActionResult> UpdateUserProfile(
+        int userId,
+        [FromBody] UpdateUserProfileRequest request)
+        {
+            await _userService.UpdateUserProfileAsync(userId, request);
+            return Ok(new { message = "Profile updated successfully" });
+        }
 
 
     }

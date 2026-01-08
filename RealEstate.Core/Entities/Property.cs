@@ -27,14 +27,14 @@ namespace RealEstate.Core.Entities
         public int? Bathrooms { get; set; }
         public int? Parking { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
+        public string? AddressLine2 { get; set; }
 
         public string City { get; set; }
-        public string State { get; set; }
+        public string? State { get; set; }
         public string Country { get; set; }
-        public string ZipCode { get; set; }
+        public string? ZipCode { get; set; }
 
         public bool IsFeatured { get; set; }
         public decimal? PricePerSqFt { get; set; }

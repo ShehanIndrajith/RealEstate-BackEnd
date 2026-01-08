@@ -10,5 +10,6 @@ namespace RealEstate.Core.Interfaces
     public interface IAgentRepository
     {
         Task AddAsync(Agent agent);
+        Task AddAgentExpertisesIfNotExistsAsync(int agentId, List<string> expertises);
     }
 }
