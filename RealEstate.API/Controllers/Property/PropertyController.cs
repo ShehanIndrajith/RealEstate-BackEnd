@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RealEstate.Core.Services;
 using RealEstate.Infrastructure.Services;
+using System;
 using System.Security.Claims;
 
 namespace RealEstate.API.Controllers.Property
@@ -33,6 +34,169 @@ namespace RealEstate.API.Controllers.Property
             {
                 message = "Properties retrieved successfully",
                 data = properties
+            });
+        }
+
+        [HttpGet("listing-type/{listingType}")]
+        public async Task<IActionResult> GetPropertiesByListingType(string listingType)
+        {
+            if (string.IsNullOrWhiteSpace(listingType))
+            {
+                return BadRequest(new { message = "ListingType is required" });
+            }
+
+            var properties = await _propertyService.GetPropertiesByListingTypeAsync(listingType);
+
+            if (properties == null || !properties.Any())
+            {
+                return Ok(new
+                {
+                    message = "No properties found",
+                    data = properties
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Properties retrieved successfully",
+                data = properties
+            });
+        }
+
+        [HttpGet("property-type/{propertyType}")]
+        public async Task<IActionResult> GetPropertiesByPropertyType(string propertyType)
+        {
+            if (string.IsNullOrWhiteSpace(propertyType))
+            {
+                return BadRequest(new { message = "PropertyType is required" });
+            }
+
+            var properties = await _propertyService.GetPropertiesByPropertyTypeAsync(propertyType);
+
+            if (properties == null || !properties.Any())
+            {
+                return Ok(new
+                {
+                    message = "No properties found",
+                    data = properties
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Properties retrieved successfully",
+                data = properties
+            });
+        }
+
+        [HttpGet("city/{city}")]
+        public async Task<IActionResult> GetPropertiesByCity(string city)
+        {
+            if (string.IsNullOrWhiteSpace(city))
+            {
+                return BadRequest(new { message = "City is required" });
+            }
+
+            var properties = await _propertyService.GetPropertiesByCityAsync(city);
+
+            if (properties == null || !properties.Any())
+            {
+                return Ok(new
+                {
+                    message = "No properties found",
+                    data = properties
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Properties retrieved successfully",
+                data = properties
+            });
+        }
+
+        [HttpGet("agent/{agentId:int}")]
+        public async Task<IActionResult> GetActivePropertiesByAgentId(int agentId)
+        {
+            if (agentId <= 0)
+            {
+                return BadRequest(new { message = "AgentID must be greater than zero" });
+            }
+
+            var properties = await _propertyService.GetAllActivePropertiesbyAgentID(agentId);
+
+            if (properties == null || !properties.Any())
+            {
+                return Ok(new
+                {
+                    message = "No properties found",
+                    data = properties
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Properties retrieved successfully",
+                data = properties
+            });
+        }
+
+        [HttpGet("{propertyId:int}")]
+        public async Task<IActionResult> GetPropertyById(int propertyId)
+        {
+            if (propertyId <= 0)
+            {
+                return BadRequest(new { message = "PropertyID must be greater than zero" });
+            }
+
+            var property = await _propertyService.GetPropertyByIdAsync(propertyId);
+            if (property == null)
+            {
+                return NotFound(new { message = "Property not found" });
+            }
+
+            return Ok(new
+            {
+                message = "Property retrieved successfully",
+                data = property
+            });
+        }
+
+        [HttpDelete("{propertyId}")]
+        public async Task<IActionResult> DeactivateProperty(int propertyId)
+        {
+            if (propertyId <= 0)
+            {
+                return BadRequest(new { message = "PropertyID must be greater than zero" });
+            }
+
+            var updated = await _propertyService.DeactivatePropertyAsync(propertyId);
+            if (!updated)
+            {
+                return NotFound(new { message = "Property not found" });
+            }
+
+            return Ok(new { message = "Property deactivated successfully" });
+        }
+
+        [HttpGet("top-cities")]
+        public async Task<IActionResult> GetTopCities()
+        {
+            var cities = await _propertyService.GetTopCitiesAsync(5);
+
+            if (cities == null || !cities.Any())
+            {
+                return Ok(new
+                {
+                    message = "No cities found",
+                    data = cities
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Top cities retrieved successfully",
+                data = cities
             });
         }
     }
