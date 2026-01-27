@@ -33,11 +33,10 @@ namespace RealEstate.Infrastructure.Services
             _cloudinaryService = cloudinaryService;
         }
 
-        public async Task<List<PropertyListItemDto>> GetAllPropertiesAsync()
+        public async Task<List<PropertyCardDto>> GetAllPropertiesAsync()
         {
-            var properties = await _propertyRepository.GetAllActivePropertiesAsync();
+            return await _propertyRepository.GetAllActivePropertiesAsync();
 
-            return MapProperties(properties);
         }
 
         public async Task<List<PropertyListItemDto>> GetPropertiesByListingTypeAsync(string listingType)
@@ -83,30 +82,24 @@ namespace RealEstate.Infrastructure.Services
             return MapProperties(properties);
         }
 
+        public async Task<List<PropertyCardDto>> GetAllFeaturedPropertiesAsync()
+        {
+            return await _propertyRepository.GetAllFeaturedPropertiesAsync();
+        }
+
         public async Task<List<PropertyListItemDto>> GetAllActivePropertiesbyAgentID(int agentId)
         {
             if (agentId <= 0)
             {
                 return new List<PropertyListItemDto>();
             }
-            var properties = await _propertyRepository.SearchPropertiesAsync(null,null,null,agentId);
+             var properties = await _propertyRepository.SearchPropertiesAsync(null,null,null,agentId);
             return MapProperties(properties);
         }
 
-        public async Task<PropertyListItemDto?> GetPropertyByIdAsync(int propertyId)
+        public Task<PropertyDetailsDto?> GetPropertyDetailsByIdAsync(int propertyId)
         {
-            if (propertyId <= 0)
-            {
-                return null;
-            }
-
-            var property = await _propertyRepository.GetPropertyDetailsByIdAsync(propertyId);
-            if (property == null)
-            {
-                return null;
-            }
-
-            return MapProperties(new[] { property }).FirstOrDefault();
+            return _propertyRepository.GetPropertyDetailsByIdAsync(propertyId);
         }
 
         public async Task<bool> DeactivatePropertyAsync(int propertyId)
@@ -185,6 +178,21 @@ namespace RealEstate.Infrastructure.Services
                         .ToList()
                 }
             }).ToList();
+        }
+
+        public Task<List<PropertyMedia>> GetAllMediaByPropertyIdAsync(int propertyId)
+        {
+            return _propertyRepository.GetAllMediaByPropertyIdAsync(propertyId);
+        }
+
+        public Task<PropertyDescriptionDto?> GetPropertyDescriptionWithFeaturesAsync(int propertyId)
+        {
+            return _propertyRepository.GetPropertyDescriptionWithFeaturesAsync(propertyId);
+        }
+
+        public Task<List<int>> GetAmenityIdsByPropertyIdAsync(int propertyId)
+        {
+            return _propertyRepository.GetAmenityIdsByPropertyIdAsync(propertyId);
         }
     }
 }

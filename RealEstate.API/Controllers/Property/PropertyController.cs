@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RealEstate.Core.Entities;
 using RealEstate.Core.Services;
 using RealEstate.Infrastructure.Services;
+using RealEstate.Shared.DTOs.Property;
 using System;
 using System.Security.Claims;
 
@@ -115,6 +117,13 @@ namespace RealEstate.API.Controllers.Property
             });
         }
 
+        [HttpGet("featured")]
+        public async Task<ActionResult<List<PropertyCardDto>>> GetFeaturedProperties()
+        {
+            var result = await _propertyService.GetAllFeaturedPropertiesAsync();
+            return Ok(result);
+        }
+
         [HttpGet("agent/{agentId:int}")]
         public async Task<IActionResult> GetActivePropertiesByAgentId(int agentId)
         {
@@ -149,7 +158,7 @@ namespace RealEstate.API.Controllers.Property
                 return BadRequest(new { message = "PropertyID must be greater than zero" });
             }
 
-            var property = await _propertyService.GetPropertyByIdAsync(propertyId);
+            var property = await _propertyService.GetPropertyDetailsByIdAsync(propertyId);
             if (property == null)
             {
                 return NotFound(new { message = "Property not found" });
@@ -198,6 +207,41 @@ namespace RealEstate.API.Controllers.Property
                 message = "Top cities retrieved successfully",
                 data = cities
             });
+        }
+
+        [HttpGet("{propertyId:int}/media")]
+        [Produces("application/json")]
+        public async Task<ActionResult<List<PropertyMedia>>> GetPropertyMedia(int propertyId)
+        {
+            var result = await _propertyService.GetAllMediaByPropertyIdAsync(propertyId);
+
+            // Optional: return 404 if there are no media items for that property
+            if (result == null || result.Count == 0)
+                return NotFound(new { message = "No media found for the given PropertyID." });
+
+            return Ok(result);
+        }
+
+        [HttpGet("{propertyId:int}/description-features")]
+        [Produces("application/json")]
+        public async Task<ActionResult<PropertyDescriptionDto>> GetDescriptionAndFeatures(int propertyId)
+        {
+            var result = await _propertyService.GetPropertyDescriptionWithFeaturesAsync(propertyId);
+
+            if (result == null)
+                return NotFound(new { message = "Property not found for the given PropertyID." });
+
+            return Ok(result);
+        }
+
+        [HttpGet("{propertyId:int}/amenity-ids")]
+        [Produces("application/json")]
+        public async Task<ActionResult<List<int>>> GetAmenityIds(int propertyId)
+        {
+            var ids = await _propertyService.GetAmenityIdsByPropertyIdAsync(propertyId);
+
+            // Always return a list (empty if none)
+            return Ok(ids ?? new List<int>());
         }
     }
 }

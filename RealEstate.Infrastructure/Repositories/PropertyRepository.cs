@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RealEstate.Core.Entities;
 using RealEstate.Core.Interfaces;
+using RealEstate.Shared.DTOs.Property;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,18 +34,59 @@ namespace RealEstate.Infrastructure.Repositories
         }
 
 
-        public async Task<List<Property>> GetAllActivePropertiesAsync()
+        public async Task<List<PropertyCardDto>> GetAllActivePropertiesAsync()
         {
             return await _context.Properties
-              .Where(p => p.IsActive && p.ExpiredAt == null)
-        .Include(p => p.Agent)
-        .Include(p => p.PropertyMedia)
-        .Include(p => p.PropertyFeatures)
-        .Include(p => p.PropertyAmenities)
-        .Include(p => p.PropertyNearby)
-        .Include(p => p.PropertyInquiries)
-        .ToListAsync();
+                .AsNoTracking()
+                .Where(p => p.IsActive && p.ExpiredAt == null)
+                .Select(p => new PropertyCardDto
+                {
+                    Id = p.PropertyID,
+                    Image = p.PropertyMedia
+                        .Where(m => m.IsPrimary)
+                        .OrderBy(m => m.DisplayOrder)
+                        .Select(m => m.MediaURL)
+                        .FirstOrDefault(),
+
+                    Price = p.Price,
+                    Title = p.Title,
+                    Location = (p.City ?? "")
+                               + (p.State != null && p.State != "" ? ", " + p.State : ""),
+                    Bedrooms = p.Bedrooms,
+                    Bathrooms = p.Bathrooms,
+                    Area = p.AreaSqFt,
+                    Type = p.PropertyType
+                })
+                .ToListAsync();
         }
+
+        public async Task<List<PropertyCardDto>> GetAllFeaturedPropertiesAsync()
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Where(p => p.IsFeatured && p.IsActive && p.ExpiredAt == null)
+                .Select(p => new PropertyCardDto
+                {
+                    Id = p.PropertyID,
+                    Image = p.PropertyMedia
+                        .Where(m => m.IsPrimary)
+                        .OrderBy(m => m.DisplayOrder)
+                        .Select(m => m.MediaURL)
+                        .FirstOrDefault(),
+
+                    Price = p.Price,
+                    Title = p.Title,
+                    Location = (p.City ?? "")
+                               + (p.State != null && p.State != "" ? ", " + p.State : ""),
+                    Bedrooms = p.Bedrooms,
+                    Bathrooms = p.Bathrooms,
+                    Area = p.AreaSqFt,
+                    Type = p.PropertyType
+                })
+                .ToListAsync();
+        }
+
+
 
         public async Task<List<Property>> SearchPropertiesAsync(string? propertyType,string? listingType, string? city, int? agentId)
         {
@@ -69,19 +111,19 @@ namespace RealEstate.Infrastructure.Repositories
             return await q.ToListAsync();
         }
 
-        public async Task<Property?> GetPropertyDetailsByIdAsync(int propertyId)
-        {
-            return await _context.Properties
-                .AsNoTracking()
-                .Where(p => p.PropertyID == propertyId)
-                .Include(p => p.Agent)
-                .Include(p => p.PropertyMedia)
-                .Include(p => p.PropertyFeatures)
-                .Include(p => p.PropertyAmenities)
-                .Include(p => p.PropertyNearby)
-                .Include(p => p.PropertyInquiries)
-                .FirstOrDefaultAsync();
-        }
+        //public async Task<Property?> GetPropertyDetailsByIdAsync(int propertyId)
+        //{
+        //    return await _context.Properties
+        //        .AsNoTracking()
+        //        .Where(p => p.PropertyID == propertyId)
+        //        .Include(p => p.Agent)
+        //        .Include(p => p.PropertyMedia)
+        //        .Include(p => p.PropertyFeatures)
+        //        .Include(p => p.PropertyAmenities)
+        //        .Include(p => p.PropertyNearby)
+        //        .Include(p => p.PropertyInquiries)
+        //        .FirstOrDefaultAsync();
+        //}
 
         public async Task<List<string>> GetTopCitiesAsync(int count)
         {
@@ -104,7 +146,75 @@ namespace RealEstate.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<PropertyMedia>> GetAllMediaByPropertyIdAsync(int propertyId)
+        {
+            return await _context.PropertyMedia
+                .AsNoTracking()
+                .Where(m => m.PropertyID == propertyId)
+                .OrderByDescending(m => m.IsPrimary)   // primary first
+                .ThenBy(m => m.DisplayOrder)           // then display order
+                .ThenBy(m => m.MediaID)                // stable ordering
+                .ToListAsync();
+        }
 
+        public async Task<PropertyDetailsDto?> GetPropertyDetailsByIdAsync(int propertyId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Where(p => p.PropertyID == propertyId && p.IsActive && p.ExpiredAt == null)
+                .Select(p => new PropertyDetailsDto
+                {
+                    PropertyId = p.PropertyID,
 
+                    Title = p.Title,
+                    Price = p.Price,
+
+                    Location = (p.City ?? "")
+                               + (!string.IsNullOrWhiteSpace(p.State) ? ", " + p.State : ""),
+
+                    ListingType = p.ListingType,
+
+                    Bedrooms = p.Bedrooms,
+                    Bathrooms = p.Bathrooms,
+                    Area = p.AreaSqFt,
+                    Parking = p.Parking,
+                    PropertyType = p.PropertyType,
+                    YearBuilt = p.YearBuilt
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<PropertyDescriptionDto?> GetPropertyDescriptionWithFeaturesAsync(int propertyId)
+        {
+            return await _context.Properties
+                .AsNoTracking()
+                .Where(p => p.PropertyID == propertyId)
+                .Select(p => new PropertyDescriptionDto
+                {
+                    PropertyId = p.PropertyID,
+                    Description = p.Description,
+
+                    Features = p.PropertyFeatures
+                        .OrderBy(f => f.FeatureID)
+                        .Select(f => new PropertyFeatureDto
+                        {
+                            FeatureId = f.FeatureID,
+                            FeatureName = f.FeatureName,
+                            FeatureDescription = f.FeatureDescription
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<int>> GetAmenityIdsByPropertyIdAsync(int propertyId)
+        {
+            return await _context.PropertyAmenities
+                .AsNoTracking()
+                .Where(pa => pa.PropertyID == propertyId)
+                .OrderBy(pa => pa.AmenityID)
+                .Select(pa => pa.AmenityID)
+                .ToListAsync();
+        }
     }
 }
